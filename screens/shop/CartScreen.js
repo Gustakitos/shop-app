@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, FlatList, Button, StyleSheet } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Colors from '../../constants/Colors';
 import CartItem from '../../components/shop/CartItem';
@@ -30,7 +30,7 @@ const CartScreen = (props) => {
       <View style={styles.summary}>
         <Text style={styles.summaryText}>
           Total:{' '}
-          <Text style={styles.amount}>${cartTotalAmount.toFixed(2)}</Text>
+          <Text style={styles.amount}>${Math.round(cartTotalAmount.toFixed(2) * 100) / 100}</Text>
         </Text>
         <Button
           color={Colors.accent}

@@ -1,6 +1,7 @@
 import { ADD_TO_CART, REMOVE_FROM_CART } from '../actions/cartActions';
 import { ADD_ORDER } from '../actions/orderActions';
 import CartItem from '../../models/cart-item';
+import { DELETE_PRODUCT } from '../actions/productsActions';
 
 const initialState = {
   items: {},
@@ -34,36 +35,43 @@ export default (state = initialState, action) => {
       };
     case REMOVE_FROM_CART:
       const selectedCartItem = state.items[action.payload];
-      const currentQty = state.items[action.payload].quantity;
+      const currentQty = selectedCartItem.quantity;
       let updatedCartItems;
       if (currentQty > 1) {
+        // need to reduce it, not erase it
         const updatedCartItem = new CartItem(
           selectedCartItem.quantity - 1,
           selectedCartItem.productPrice,
           selectedCartItem.productTitle,
-          selectedCartItem.sum - selectedCartItem.productPrice,
+          selectedCartItem.sum - selectedCartItem.productPrice
         );
-        updatedCartItems = {
-          ...state.items,
-          [action.payload]: updatedCartItem,
-        };
+        updatedCartItems = { ...state.items, [action.payload]: updatedCartItem };
       } else {
         updatedCartItems = { ...state.items };
         delete updatedCartItems[action.payload];
       }
-      let newTotal;
-      newTotal =
-        state.totalAmount - selectedCartItem.productPrice === 0
-          ? 0.0
-          : state.totalAmount - selectedCartItem.productPrice;
-
       return {
         ...state,
         items: updatedCartItems,
-        totalAmount: newTotal,
+        totalAmount: state.totalAmount - selectedCartItem.productPrice
       };
     case ADD_ORDER:
       return initialState;
+
+    case DELETE_PRODUCT:
+      if (!state.items[action.payload]) {
+        return state;
+      }
+
+      const updatedItems = { ...state.items };
+      const itemTotal = state.items[action.payload].sum;
+      delete updatedItems[action.payload];
+
+      return {
+        ...state,
+        items: updatedItems,
+        totalAmount: state.totalAmount - itemTotal,
+      };
   }
   return state;
 };

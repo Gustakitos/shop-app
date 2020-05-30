@@ -1,15 +1,20 @@
 import React from 'react';
-import { FlatList, Button, Platform } from 'react-native';
+import { Button, FlatList, Platform } from 'react-native';
 import ProductItem from '../../components/shop/ProductItem';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import HeaderButton from '../../components/UI/HeaderButton';
 
 import Colors from '../../constants/Colors';
-import * as cartActions from '../../store/actions/cartActions';
+import * as productsActions from '../../store/actions/productsActions';
 
 const UserProductsScreen = (props) => {
   const userProducts = useSelector(state => state.products.userProducts);
+  const dispatch = useDispatch();
+
+  const editProductHandler = (id) => {
+    props.navigation.navigate('EditProduct', { productId: id });
+  };
 
   return (
     <FlatList
@@ -21,20 +26,21 @@ const UserProductsScreen = (props) => {
           title={itemData.item.title}
           price={itemData.item.price}
           onSelect={() => {
+            editProductHandler(itemData.item.id);
           }}
         >
           <Button
             color={Colors.primary}
             title="Edit"
             onPress={() => {
-
+              editProductHandler(itemData.item.id);
             }}
           />
           <Button
             color={Colors.primary}
             title="Delete"
             onPress={() => {
-              // dispatch(cartActions.addToCart(itemData.item));
+              dispatch(productsActions.deleteProduct(itemData.item.id));
             }}
           />
         </ProductItem>
@@ -58,6 +64,17 @@ UserProductsScreen.navigationOptions = navData => {
         />
       </HeaderButtons>
     ),
+    headerRight: (
+      <HeaderButtons HeaderButtonComponent={HeaderButton}>
+        <Item
+          title="Add"
+          iconName={Platform.OS === 'android' ? 'md-create' : 'ios-create'}
+          onPress={() => {
+            navData.navigation.navigate('EditProduct');
+          }}
+        />
+      </HeaderButtons>
+    )
   };
 
 };
