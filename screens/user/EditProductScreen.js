@@ -35,6 +35,7 @@ const EditProductScreen = (props) => {
         +price,
       ));
     }
+    props.navigation.goBack();
   }, [dispatch, prodId, title, description, imageUrl, price]);
 
   useEffect(() => {
