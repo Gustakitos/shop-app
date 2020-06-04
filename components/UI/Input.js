@@ -73,7 +73,7 @@ const Input = (props) => {
       <TextInput
         {...props}
         style={styles.input}
-        value={inputState.value.title}
+        value={inputState.value}
         onChangeText={textChangeHandler}
         onBlur={lostFocusHandler}
       />
