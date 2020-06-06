@@ -1,24 +1,28 @@
 import React, { useState } from 'react';
-import { createStore, combineReducers, applyMiddleware } from 'redux';
+import {
+  applyMiddleware,
+  combineReducers,
+  createStore
+} from 'redux';
 import { Provider } from 'react-redux';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import ReduxThunk from 'redux-thunk';
 
-import { composeWithDevTools } from 'redux-devtools-extension';
-
 import productsReducer from './store/reducers/productsReducer';
 import cartReducer from './store/reducers/cartReducer';
-import ShopNavigator from './navigation/ShopNavigator';
 import orderReducer from './store/reducers/orderReducer';
+import authReducer from "./store/reducers/authReducer";
+import NavigationContainer from "./navigation/NavigationContainer";
 
 const rootReducer = combineReducers({
   products: productsReducer,
   cart: cartReducer,
-  orders: orderReducer
+  orders: orderReducer,
+  auth: authReducer
 });
 
-const store = createStore(rootReducer, composeWithDevTools(), applyMiddleware(ReduxThunk));
+const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
 
 const fetchFonts = () => {
   return Font.loadAsync({
@@ -28,21 +32,21 @@ const fetchFonts = () => {
 };
 
 export default function App() {
-  const [fontLoaded, setFontLoaded] = useState(false);
+  const [ fontLoaded, setFontLoaded ] = useState(false);
 
   if (!fontLoaded) {
     return (
-      <AppLoading
-        startAsync={fetchFonts}
-        onFinish={() => {
-          setFontLoaded(true);
-        }}
-      />
+        <AppLoading
+            startAsync={ fetchFonts }
+            onFinish={ () => {
+              setFontLoaded(true);
+            } }
+        />
     );
   }
   return (
-    <Provider store={store}>
-      <ShopNavigator />
-    </Provider>
+      <Provider store={ store }>
+        <NavigationContainer/>
+      </Provider>
   );
 }
